@@ -6,22 +6,39 @@ function App() {
   const [people, setPeople] = useState(data)
   const [index, setIndex] = useState(0)
 
-  //runs if the index or people array gets re-rendered
-  useEffect(() => {
-    const lastIndex = people.length - 1
-    if (index < 0) {
-      setIndex(lastIndex)
-    } else if (index > people.length - 1) {
-      setIndex(0)
-    }
-  }, [index, people])
+  const prevSlide = () => {
+    setIndex((oldIndex) => {
+      let index = oldIndex - 1
+      if (index < 0) {
+        index = people.length - 1
+      }
+      return index
+    })
+  }
 
+  const nextSlide = () => {
+    setIndex((oldIndex) => {
+      let index = oldIndex + 1
+      if (index > people.length - 1) {
+        index = 0
+      }
+      return index
+    })
+  }
+
+  //Automatically slides to the right every 5 seconds
   useEffect(() => {
     let slider = setInterval(() => {
-      setIndex(index + 1)
+      setIndex((oldIndex) => {
+        let index = oldIndex + 1
+        if (index > people.length - 1) {
+          index = 0
+        }
+        return index
+      })
     }, 5000)
     return () => clearInterval(slider)
-  }, [index])
+  }, [index, people.length])
 
   return (
     <div>
@@ -54,10 +71,10 @@ function App() {
             </article>
           )
         })}
-        <button className="prev" onClick={() => setIndex(index - 1)}>
+        <button className="prev" onClick={prevSlide}>
           <FiChevronLeft />
         </button>
-        <button className="next" onClick={() => setIndex(index + 1)}>
+        <button className="next" onClick={nextSlide}>
           <FiChevronRight />
         </button>
       </section>
